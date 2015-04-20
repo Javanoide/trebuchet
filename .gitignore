@@ -26,3 +26,11 @@
 *.exe
 *.out
 *.app
+
+#CMake generated Files
+*.cbp
+*.cmake
+Trebuchet/bin
+Trebuchet/CMakeFiles
+Trebuchet/MakeFile
+Trebuchet/CMakeCache.txt
