@@ -12,12 +12,16 @@ class Catapult
         float getInertie();
         float getAcceleration();
         float getVelocite();
-        float getEImpact();
-        float getETNT();*/
+        float getEImpact();*/
+        float getETNT();
         float getPortee();
+        float getScore();
         bool isViable();
 
     private:
+
+        float calcScore();
+
         float fTraction;
         float momentBras;
         float inertie;
@@ -26,6 +30,7 @@ class Catapult
         float eImpact;
         float eTNT;
         float portee;
+        float score;
         bool viable;
 
 };

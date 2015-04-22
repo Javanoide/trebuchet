@@ -39,11 +39,43 @@ Catapult::Catapult(float aButee, float aTraction, float mBras, float mPoid, floa
     }else{
         this->viable = false;
     }
+
+    this->calcScore();
+}
+
+float Catapult::calcScore()
+{
+    int distance = 300;
+    //si la catapulte est viable 50 points
+    if(this->isViable())
+    {
+        this->score+=50.f;
+    }
+    //50 point si elletouche la cible, entre 0 et la cible on donne en point le pourcentage de la distance parcourue appliqué à 50. 10% de la distance égale 10% de 50 points
+    if(this->portee <= distance)
+    {
+        this->score+= (this->portee/distance)*50;
+    }else
+    {
+        this->score+= ((this->portee-distance)/distance)*50;
+    }
+
+    this->score+=this->eTNT;
+}
+
+float Catapult::getETNT()
+{
+    return this->eTNT;
 }
 
 float Catapult::getPortee()
 {
     return this->portee;
+}
+
+float Catapult::getScore()
+{
+    return this->score;
 }
 bool Catapult::isViable()
 {

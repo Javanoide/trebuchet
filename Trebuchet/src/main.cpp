@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    int i = 100;
+    int i = 2;
 
     while(i>0){
 
@@ -29,6 +29,8 @@ int main(int argc, char *argv[])
         if(LOG){
             cout << "Distance : " << c->getPortee() << " metres" << endl;
             cout << "Viabilité : " << c->isViable() << endl;
+            cout << "TNT : " << c->getETNT() << endl;
+            cout << "Score : " << c->getScore() << endl;
             cout << "--------------------------------------" << endl;
         }
 
