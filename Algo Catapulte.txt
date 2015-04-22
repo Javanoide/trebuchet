@@ -1,0 +1,15 @@
+DEBUT
+“Saisir la distance de la cible”: d
+	Afficher « La cible est à  d metres »
+
+« Où êtes-vous? Sur Terre, sur la Lune ou sur Jupiter? » planète
+	SI planète = terre ALORS g = 9,81
+	SINON SI planete = lune ALORS g = 1,62
+	SINON SI plenete = jupiter ALORS g = 24,80 
+
+Génération de valeurs aléatoire pour les paramètres de la catapulte
+
+Calculer la viabilité
+
+
+
