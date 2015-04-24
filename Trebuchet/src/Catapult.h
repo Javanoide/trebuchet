@@ -17,6 +17,7 @@ class Catapult
         float getPortee();
         float getScore();
         bool isViable();
+        void setCouple();
 
     private:
 

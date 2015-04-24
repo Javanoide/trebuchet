@@ -60,7 +60,7 @@ float Catapult::calcScore()
         this->score+= ((this->portee-distance)/distance)*50;
     }
 
-    this->score+=this->eTNT;
+    //this->score+=this->eTNT;
 }
 
 float Catapult::getETNT()
