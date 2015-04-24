@@ -14,27 +14,35 @@ Catapult::Catapult(float aButee, float aTraction, float mBras, float mPoid, floa
     //Gravité
     const float g = 9.81;
 
-    aTraction = aTraction*PI/180;
-    aButee = aButee*PI/180;
+    this->aButee = aButee;
+    this->aTraction = aTraction;
+    this->mBras = mBras;
+    this->mPoid = mPoid;
+    this->mProjectile = mProjectile;
+    this->lBase = lBase;
+    this->lBras = lBras;
 
-    this->fTraction = (mPoid * g) * sin(aTraction) - (mProjectile * g) * cos(aButee);
+    this->aTraction = this->aTraction*PI/180;
+    this->aButee = this->aButee*PI/180;
 
-    this->momentBras = this->fTraction * lBras;
+    this->fTraction = (this->mPoid * g) * sin(this->aTraction) - (this->mProjectile * g) * cos(this->aButee);
 
-    this->inertie = (mBras * (lBras * lBras))/3;
+    this->momentBras = this->fTraction * this->lBras;
+
+    this->inertie = (this->mBras * (this->lBras * this->lBras))/3;
 
     this->acceleration = this->momentBras/this->inertie;
 
-    this->velocite = this->acceleration * lBras;
+    this->velocite = this->acceleration * this->lBras;
 
-    this->portee = (this->velocite * this->velocite)/g * sin((2 * (90 - ((aButee*180)/PI)))*PI/180);
+    this->portee = (this->velocite * this->velocite)/g * sin((2 * (90 - ((this->aButee*180)/PI)))*PI/180);
 
-    this->eImpact = 0.5 * mProjectile * (this->velocite * this->velocite);
+    this->eImpact = 0.5 * this->mProjectile * (this->velocite * this->velocite);
 
     this->eTNT = this->eImpact/4184;
 
     //verification resistance
-    if((pow(sin(aButee)*lBras, 2) + pow(cos(aButee)*lBras-lBase, 2))*sin(aButee)*(mProjectile*g) <= lBase*(mPoid*g)){
+    if((pow(sin(this->aButee)*this->lBras, 2) + pow(cos(this->aButee)*this->lBras-this->lBase, 2))*sin(this->aButee)*(this->mProjectile*g) <= lBase*(this->mPoid*g)){
         this->viable = true;
     }else{
         this->viable = false;
@@ -47,7 +55,7 @@ float Catapult::calcScore()
 {
     int distance = 300;
     //si la catapulte est viable 50 points
-    if(this->isViable())
+    if(this->viable)
     {
         this->score+=50.f;
     }
@@ -57,27 +65,8 @@ float Catapult::calcScore()
         this->score+= (this->portee/distance)*50;
     }else
     {
-        this->score+= ((this->portee-distance)/distance)*50;
+        //this->score+= ((this->portee-distance)/distance)*50;
     }
 
     //this->score+=this->eTNT;
-}
-
-float Catapult::getETNT()
-{
-    return this->eTNT;
-}
-
-float Catapult::getPortee()
-{
-    return this->portee;
-}
-
-float Catapult::getScore()
-{
-    return this->score;
-}
-bool Catapult::isViable()
-{
-    return this->viable;
 }

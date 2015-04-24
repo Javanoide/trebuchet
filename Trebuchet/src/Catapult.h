@@ -7,22 +7,20 @@ class Catapult
     public:
         Catapult(float aButee, float aTraction, float mBras, float mPoid, float mProjectile, float lBase, float lBras);
 
-        /*float getFTraction();
-        float getMomentBras();
-        float getInertie();
-        float getAcceleration();
-        float getVelocite();
-        float getEImpact();*/
-        float getETNT();
-        float getPortee();
-        float getScore();
         bool isViable();
         void setCouple();
-
-    private:
-
         float calcScore();
 
+        //Genetique
+        float aButee;
+        float aTraction;
+        float mBras;
+        float mPoid;
+        float mProjectile;
+        float lBase;
+        float lBras;
+
+        //fonction physique calculée
         float fTraction;
         float momentBras;
         float inertie;
