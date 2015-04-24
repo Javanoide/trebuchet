@@ -172,6 +172,26 @@ vector<vector<Catapult*>> mutation(vector<vector<Catapult*>> couples, int tauxMu
 
 int main(int argc, char *argv[])
 {
+    //nombre de catapult généré par génération
+    const int nbGen = 50;
+    vector<Catapult*> population;
+
+
+    //generation de la première génération de catapultes
+    for(int i=0; i<nbGen; i++)
+    {
+        float aButee = rand()%360 + 1;
+        float aTraction = rand()%360 + 1;
+        float mBras = rand();
+        float mPoid = rand();
+        float mProjectile = rand();
+        float lBase = rand();
+        float lBras = rand();
+
+        Catapult* c = new Catapult(aButee, aTraction, mBras, mPoid, mProjectile, lBase, lBras);
+        population.push_back(c);
+    }
+
     int input=1;
     while(input%2 >0)
     {
@@ -179,27 +199,9 @@ int main(int argc, char *argv[])
         cin >>input;
     }
 
-    const int nbGen = input;
-    vector<Catapult*> population;
-
-    for(int gen=0; gen<nbGen; gen++)
+    for(int gen=0; gen<input; gen++)
     {
-        cout << "Generation " << gen << "-----------------------------------------------------" <<endl;
-
-        //generation de la première génération de catapultes
-        for(int i=0; i<nbGen; i++)
-        {
-            float aButee = rand()%360 + 1;
-            float aTraction = rand()%360 + 1;
-            float mBras = rand();
-            float mPoid = rand();
-            float mProjectile = rand();
-            float lBase = rand();
-            float lBras = rand();
-
-            Catapult* c = new Catapult(aButee, aTraction, mBras, mPoid, mProjectile, lBase, lBras);
-            population.push_back(c);
-        }
+        cout << "Generation " << gen+1 << "-----------------------------------------------------" <<endl;
 
         if(LOG_ADV)
         {
@@ -215,19 +217,18 @@ int main(int argc, char *argv[])
 
         vector<vector<Catapult*>> couples = RWS(population);
         couples = mutation(couples, 0);
-        vector<Catapult*> newPopulation;
-
+        //on efface les paretns du tableau population
+        population.clear();
+        //on met les enfants dans le tableau population
         for(int i=0; i<couples.size(); i++)
         {
             vector<Catapult*> couple = couples[i];
 
             for(int j=0; j<couple.size(); j++)
             {
-                newPopulation.push_back(couple[j]);
+                population.push_back(couple[j]);
             }
         }
-
-        population = newPopulation;
     }
 
 

@@ -65,8 +65,12 @@ float Catapult::calcScore()
         this->score+= (this->portee/distance)*50;
     }else
     {
-        //this->score+= ((this->portee-distance)/distance)*50;
+        /*if(this->portee>0)
+            this->score-= ((this->portee-distance)/distance)*50;
+
+        if(this->portee<0)
+            this->score+= ((this->portee-distance)/distance)*50;*/
     }
 
-    //this->score+=this->eTNT;
+    this->score+=(this->eTNT/100000);
 }
