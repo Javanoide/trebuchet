@@ -9,7 +9,7 @@
 
 #include "Catapult.h"
 #define LOG         1
-#define LOG_ADV     0
+#define LOG_ADV     1
 
 using namespace std;
 
@@ -172,8 +172,14 @@ vector<vector<Catapult*>> mutation(vector<vector<Catapult*>> couples, int tauxMu
 
 int main(int argc, char *argv[])
 {
+    int input=1;
+    while(input%2 >0)
+    {
+        cout << "number of catapults per generation ?" <<endl;
+        cin >>input;
+    }
     //nombre de catapult généré par génération
-    const int nbGen = 50;
+    const int nbGen = input;
     vector<Catapult*> population;
 
 
@@ -192,12 +198,8 @@ int main(int argc, char *argv[])
         population.push_back(c);
     }
 
-    int input=1;
-    while(input%2 >0)
-    {
-        cout << "number of generation ?" <<endl;
-        cin >>input;
-    }
+    cout << "number of generation ?" <<endl;
+    cin >>input;
 
     for(int gen=0; gen<input; gen++)
     {
