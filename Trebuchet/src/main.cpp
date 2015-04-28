@@ -16,6 +16,9 @@
 
 using namespace std;
 
+random_device rd;
+mt19937 mt_rand(rd());
+
 //Fonction de selection par roue biaisée
 vector<vector<Catapult*>> RWS(vector<Catapult*> population)
 {
@@ -35,8 +38,7 @@ vector<vector<Catapult*>> RWS(vector<Catapult*> population)
         Catapult* A;
         Catapult* B;
         //paramètres des boucles
-        srand(rand());
-        random = rand()%(int)scoreTotal;
+        random = mt_rand()%(int)scoreTotal;
         float j = 0;
         int n=0;
         bool finish = false;
@@ -58,8 +60,7 @@ vector<vector<Catapult*>> RWS(vector<Catapult*> population)
         finish = false;
         j = 0;
         n=0;
-        srand(rand());
-        random = rand()%(int)scoreTotal;
+        random = mt_rand()%(int)scoreTotal;
 
         while(j<scoreTotal && !finish)
         {
@@ -73,8 +74,7 @@ vector<vector<Catapult*>> RWS(vector<Catapult*> population)
                 {
                     j = 0;
                     n = -1;
-                    srand(rand());
-                    random = rand()%(int)scoreTotal+1;
+                    random = mt_rand()%(int)scoreTotal+1;
                 }
                 if(A!=B)
                 {
@@ -103,8 +103,7 @@ vector<vector<Catapult*>> crossOver(vector<vector<Catapult*>> couples)
         //on tire au hasard 0 ou 1 si 1, on inverse le géne, si 0 on garde
         for(int j=0; j< sizeArray; j++)
         {
-            srand(rand());
-            if(rand()%2)
+            if(mt_rand()%2)
             {
                 swap(couple[0]->adn[j], couple[1]->adn[j]);
             }
@@ -125,11 +124,10 @@ vector<Catapult*> mutation(vector<Catapult*> population, float taux)
         while(nbChangeUsed < nbParams2Change)
         {
             srand(rand());
-            if(rand()%2)
+            if(mt_rand()%2)
             {
                 cout << "CHANGE" << endl;
-                srand(rand());
-                population[i]->adn[j] = rand();
+                population[i]->adn[j] = mt_rand();
                 nbChangeUsed++;
                 j++;
             }
@@ -162,20 +160,13 @@ int main(int argc, char *argv[])
     //generation de la première génération de catapultes
     for(int i=0; i<nbGen; i++)
     {
-        srand(rand());
-        float aButee = rand();
-        srand(rand());
-        float aTraction = rand();
-        srand(rand());
-        float mBras = rand();
-        srand(rand());
-        float mPoid = rand();
-        srand(rand());
-        float mProjectile = rand();
-        srand(rand());
-        float lBase = rand();
-        srand(rand());
-        float lBras = rand();
+        float aButee = mt_rand();
+        float aTraction = mt_rand();
+        float mBras = mt_rand();
+        float mPoid = mt_rand();
+        float mProjectile = mt_rand();
+        float lBase = mt_rand();
+        float lBras = mt_rand();
 
         Catapult* c = new Catapult(aButee, aTraction, mBras, mPoid, mProjectile, lBase, lBras);
         population.push_back(c);
