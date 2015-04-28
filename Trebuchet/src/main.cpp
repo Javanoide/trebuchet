@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
+#include <utility>
+#include <algorithm>
+#include <random>
 
 #include "Catapult.h"
 #define LOG         1
@@ -19,7 +22,7 @@ vector<vector<Catapult*>> RWS(vector<Catapult*> population)
     //Tableau de couples
     vector<vector<Catapult*>> couples;
     float scoreTotal=0.f;
-    float random = rand();
+    float random;
     //calcul du score
     for(int i=0; i<population.size(); i++)
     {
@@ -32,7 +35,7 @@ vector<vector<Catapult*>> RWS(vector<Catapult*> population)
         Catapult* A;
         Catapult* B;
         //paramètres des boucles
-        srand(random);
+        srand(rand());
         random = rand()%(int)scoreTotal;
         float j = 0;
         int n=0;
@@ -55,7 +58,7 @@ vector<vector<Catapult*>> RWS(vector<Catapult*> population)
         finish = false;
         j = 0;
         n=0;
-        srand(random);
+        srand(rand());
         random = rand()%(int)scoreTotal;
 
         while(j<scoreTotal && !finish)
@@ -70,6 +73,7 @@ vector<vector<Catapult*>> RWS(vector<Catapult*> population)
                 {
                     j = 0;
                     n = -1;
+                    srand(rand());
                     random = rand()%(int)scoreTotal+1;
                 }
                 if(A!=B)
@@ -89,85 +93,51 @@ vector<vector<Catapult*>> RWS(vector<Catapult*> population)
 }
 
 //fonction de mutation
-vector<vector<Catapult*>> mutation(vector<vector<Catapult*>> couples, int tauxMutation)
+vector<vector<Catapult*>> crossOver(vector<vector<Catapult*>> couples)
 {
+    int sizeArray = 7;
+    int nbChangeUsed = 0;
     for(int i=0; i<couples.size(); i++)
     {
         vector<Catapult*> couple = couples[i];
         //on tire au hasard 0 ou 1 si 1, on inverse le géne, si 0 on garde
-        srand(rand());
-        if(rand()%2)
+        for(int j=0; j< sizeArray; j++)
         {
-            float g0 = couple[0]->aButee;
-            float g1 = couple[1]->aButee;
-
-            couple[0]->aButee = g1;
-            couple[1]->aButee = g0;
+            srand(rand());
+            if(rand()%2)
+            {
+                swap(couple[0]->adn[j], couple[1]->adn[j]);
+            }
         }
 
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->aTraction;
-            float g1 = couple[1]->aTraction;
-
-            couple[0]->aTraction = g1;
-            couple[1]->aTraction = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->mBras;
-            float g1 = couple[1]->mBras;
-
-            couple[0]->mBras = g1;
-            couple[1]->mBras = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->mPoid;
-            float g1 = couple[1]->mPoid;
-
-            couple[0]->mPoid = g1;
-            couple[1]->mPoid = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->mProjectile;
-            float g1 = couple[1]->mProjectile;
-
-            couple[0]->mProjectile = g1;
-            couple[1]->mProjectile = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->lBase;
-            float g1 = couple[1]->lBase;
-
-            couple[0]->lBase = g1;
-            couple[1]->lBase = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->lBras;
-            float g1 = couple[1]->lBras;
-
-            couple[0]->lBras = g1;
-            couple[1]->lBras = g0;
-        }
-
-        couples[i] = couple;
     }
     return couples;
+}
+
+vector<Catapult*> mutation(vector<Catapult*> population, float taux)
+{
+    const int nbParams2Change = taux * 7;
+    for(int i=0; i<population.size(); i++)
+    {
+        int nbChangeUsed = 0;
+        int j=0;
+
+        while(nbChangeUsed < nbParams2Change)
+        {
+            srand(rand());
+            if(rand()%2)
+            {
+                cout << "CHANGE" << endl;
+                srand(rand());
+                population[i]->adn[j] = rand();
+                nbChangeUsed++;
+                j++;
+            }
+            if(j>=7) j=0;
+        }
+    }
+
+    return population;
 }
 
 int main(int argc, char *argv[])
@@ -180,18 +150,31 @@ int main(int argc, char *argv[])
     }
     //nombre de catapult généré par génération
     const int nbGen = input;
+
+    float tauxMut=0.f;
+    cout << "Mutation ratio ? (%)" << endl;
+    cin >> tauxMut;
+    tauxMut/=100;
+
     vector<Catapult*> population;
 
 
     //generation de la première génération de catapultes
     for(int i=0; i<nbGen; i++)
     {
-        float aButee = rand()%360 + 1;
-        float aTraction = rand()%360 + 1;
+        srand(rand());
+        float aButee = rand();
+        srand(rand());
+        float aTraction = rand();
+        srand(rand());
         float mBras = rand();
+        srand(rand());
         float mPoid = rand();
+        srand(rand());
         float mProjectile = rand();
+        srand(rand());
         float lBase = rand();
+        srand(rand());
         float lBras = rand();
 
         Catapult* c = new Catapult(aButee, aTraction, mBras, mPoid, mProjectile, lBase, lBras);
@@ -218,7 +201,7 @@ int main(int argc, char *argv[])
         }
 
         vector<vector<Catapult*>> couples = RWS(population);
-        couples = mutation(couples, 0);
+        couples = crossOver(couples);
         //on efface les paretns du tableau population
         population.clear();
         //on met les enfants dans le tableau population
@@ -231,6 +214,12 @@ int main(int argc, char *argv[])
                 population.push_back(couple[j]);
             }
         }
+
+        //on melange
+        srand(rand());
+        std::shuffle(population.begin(), population.end(), default_random_engine(rand()));
+
+        population = mutation(population, tauxMut);
     }
 
 

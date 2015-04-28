@@ -8,17 +8,10 @@ class Catapult
         Catapult(float aButee, float aTraction, float mBras, float mPoid, float mProjectile, float lBase, float lBras);
 
         bool isViable();
-        void setCouple();
         float calcScore();
 
         //Genetique
-        float aButee;
-        float aTraction;
-        float mBras;
-        float mPoid;
-        float mProjectile;
-        float lBase;
-        float lBras;
+        float adn[7];
 
         //fonction physique calculée
         float fTraction;
