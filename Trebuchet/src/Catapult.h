@@ -9,6 +9,7 @@ class Catapult
 
         bool isViable();
         float calcScore();
+        void calcPhysics();
 
         //Genetique
         float adn[7];
