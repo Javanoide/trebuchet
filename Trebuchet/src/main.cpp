@@ -12,7 +12,7 @@
 
 #include "Catapult.h"
 #define LOG         1
-#define LOG_ADV     1
+#define LOG_ADV     0
 
 using namespace std;
 
@@ -115,23 +115,16 @@ vector<vector<Catapult*>> crossOver(vector<vector<Catapult*>> couples)
 
 vector<Catapult*> mutation(vector<Catapult*> population, float taux)
 {
-    const int nbParams2Change = taux * 7;
     for(int i=0; i<population.size(); i++)
     {
-        int nbChangeUsed = 0;
-        int j=0;
-
-        while(nbChangeUsed < nbParams2Change)
+        for(int j=0; j<7; j++)
         {
-            srand(rand());
-            if(mt_rand()%2)
+            int mut = mt_rand()%100;
+            if(mut <= taux*100)
             {
                 cout << "CHANGE" << endl;
                 population[i]->adn[j] = mt_rand();
-                nbChangeUsed++;
-                j++;
             }
-            if(j>=7) j=0;
         }
     }
 
