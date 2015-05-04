@@ -21,7 +21,7 @@ using namespace std;
 //random_device rd;
 unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 mt19937 mt_rand(seed);
-uniform_int_distribution<int> ui(1, 10000);
+uniform_int_distribution<int> ui(1, 1000);
 
 //Fonction de selection par roue biaisée
 vector<vector<Catapult*>> RWS(vector<Catapult*> population)
@@ -42,84 +42,125 @@ vector<vector<Catapult*>> RWS(vector<Catapult*> population)
         Catapult* A;
         Catapult* B;
         //paramètres des boucles
-        random = ui(mt_rand)%(int)scoreTotal;
+        //uniform_int_distribution<int> ui2(1, scoreTotal-1);
+        random = mt_rand()%(int)scoreTotal;
         float j = 0;
-        int n=0;
-        bool finish = false;
-        cout << "test scoreTotal" << scoreTotal << endl;
+
         //selection de A
-        while(j<scoreTotal && !finish)
+        while(random > 0)
         {
-            j+=population[n]->score;
-            if(j>random)
-            {
-                A = population[n];
-                couple.push_back(A);
-                finish=true;
-            }
-            n++;
+            random-=population[j]->score;
+            j++;
         }
+        A = population[j];
+        couple.push_back(A);
+
 
         //selection de B et reset dees paramètres de boucles
-        finish = false;
         j = 0;
-        n=0;
-        random = ui(mt_rand)%(int)scoreTotal;
+        random = mt_rand()%(int)scoreTotal;
 
-        while(j<scoreTotal && !finish)
+
+        while(random >= 0)
         {
-            j+=population[n]->score;
-            if(j>random)
+            random-=population[j]->score;
+            j++;
+            if(random < 0)
             {
-                B = population[n];
+                B = population[j];
 
                 //A==B on recommence la selection de B
                 if(A==B)
                 {
                     j = 0;
-                    n = -1;
-                    random = ui(mt_rand)%(int)scoreTotal;
+                    random = mt_rand()%(int)scoreTotal;
                 }
                 if(A!=B)
                 {
                     couple.push_back(B);
-                    finish=true;
                 }
             }
-
-            n++;
         }
 
         couples.push_back(couple);
     }
+
+    for(int i=0; i<couples.size(); i++)
+    {
+        cout << "size couples "<< couples.size() << endl;
+        vector<Catapult*> couple = couples.at(i);
+        //on tire au hasard 0 ou 1 si 1, on inverse le géne, si 0 on garde
+            cout << "couple size " << couple.size() << endl;
+    }
+
+    cout << "finish RWS" <<endl;
     return couples;
 }
 
-//fonction de mutation
-void crossOver(vector<vector<Catapult*>>* couples)
+void crossOver(vector<vector<Catapult*>>* couples, float taux)
 {
+    cout << "Begin crossOver" << endl;
     int sizeArray = 7;
-
+    cout << "T1" << endl;
     const int sizeTab = couples->size();
     for(int i=0; i<sizeTab; i++)
     {
-        vector<Catapult*> couple = couples->at(i);
+        cout << "T2" << endl;
+        vector<Catapult*>* couple = &couples->at(i);
         //on tire au hasard 0 ou 1 si 1, on inverse le géne, si 0 on garde
         for(int j=0; j< sizeArray; j++)
         {
             if(ui(mt_rand)%2)
             {
-                swap(couple.at(0)->adn[j], couple.at(1)->adn[j]);
+
+                cout << "T3" << endl;
+                cout << "couple size " << couple->size() << endl;
+                Catapult* A = couple->at(0);
+                Catapult* B = couple->at(1);
+                //swap(A->adn[j], B->adn[j]);
+                float genA = A->adn[j];
+                float genB = B->adn[j];
+                A->adn[j] = genB;
+                B->adn[j] = genA;
+
+                int mut = ui(mt_rand)%100;
+                if(mut < taux*100)
+                {
+                    if(j==0 || j==1){
+                            cout << "T2" << endl;
+                        A->adn[j] = ui(mt_rand)%360;
+                    }else{
+                        cout << "T3" << endl;
+                        A->adn[j] = ui(mt_rand)%1000;
+                    }
+                }
+
+                mut = ui(mt_rand)%100;
+                if(mut < taux*100)
+                {
+                    if(j==0 || j==1){
+                            cout << "T2" << endl;
+                        B->adn[j] = ui(mt_rand)%360;
+                    }else{
+                        cout << "T3" << endl;
+                        B->adn[j] = ui(mt_rand)%1000;
+                    }
+                }
+
             }
         }
 
     }
-}
 
+    cout << "End crossOver" << endl;
+}
+///A DEBUGGER
 void mutation(vector<Catapult*>* population, float taux)
 {
+    cout << "Begin Mutation" << endl;
     for(int i=0; i<population->size(); i++)
     {
+        cout << "T1" << endl;
         Catapult* c = population->at(i);
         for(int j=0; j<7; j++)
         {
@@ -127,14 +168,16 @@ void mutation(vector<Catapult*>* population, float taux)
             if(mut < taux*100)
             {
                 if(j==0 || j==1){
+                        cout << "T2" << endl;
                     c->adn[j] = ui(mt_rand)%360;
                 }else{
+                    cout << "T3" << endl;
                     c->adn[j] = ui(mt_rand)%1000;
                 }
             }
         }
     }
-
+    cout << "end Mutation" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -191,9 +234,9 @@ int main(int argc, char *argv[])
         }
 
         vector<vector<Catapult*>> couples = RWS(population);
-        crossOver(&couples);
+        crossOver(&couples, tauxMut);
         //on efface les paretns du tableau population
-        population.clear();
+        /*population.empty();
         //on met les enfants dans le tableau population
         for(int i=0; i<couples.size(); i++)
         {
@@ -203,13 +246,13 @@ int main(int argc, char *argv[])
             {
                 population.push_back(couple[j]);
             }
-        }
+        }*/
 
         //on melange
-        srand(rand());
+        //srand(rand());
         //std::shuffle(population.begin(), population.end(), default_random_engine(rand()));
 
-        mutation(&population, tauxMut);
+        //mutation(&population, tauxMut);
         for(int i=0; i<population.size(); i++)
         {
             Catapult* c = population.at(i);

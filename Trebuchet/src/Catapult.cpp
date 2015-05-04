@@ -64,6 +64,7 @@ void Catapult::calcPhysics()
 
 float Catapult::calcScore()
 {
+    this->score = 0;
     int distance = 300;
     //si la catapulte est viable 50 points
     if(this->viable)
