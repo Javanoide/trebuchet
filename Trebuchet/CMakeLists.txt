@@ -8,6 +8,9 @@ project(Trebuchet)
 SET(CMAKE_CXX_FLAGS "-std=c++0x")
 set(EXECUTABLE_OUTPUT_PATH bin/)
 
+#repertoire des includes
+include_directories (lib)
+
 file(
 
         GLOB_RECURSE
@@ -18,9 +21,9 @@ file(
 )
 
 add_executable(
-
+	
 	trebuchet
 	
 	${source_files}
-	
 )
+	

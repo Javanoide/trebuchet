@@ -6,169 +6,146 @@
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
+#include <utility>
+#include <algorithm>
+#include <random>
+#include <chrono>
+#include <functional>
 
 #include "Catapult.h"
 #define LOG         1
-#define LOG_ADV     1
+#define LOG_ADV     0
 
 using namespace std;
 
+//random_device rd;
+unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+mt19937 mt_rand(seed);
+uniform_int_distribution<int> ui(1, 1000);
+int nbGen = 0;
+
 //Fonction de selection par roue biaisée
-vector<vector<Catapult*>> RWS(vector<Catapult*> population)
+Catapult* RWS(Catapult population[])
 {
-    //Tableau de couples
-    vector<vector<Catapult*>> couples;
+    Catapult populationTrie[nbGen];
     float scoreTotal=0.f;
-    float random = rand();
+    float random;
     //calcul du score
-    for(int i=0; i<population.size(); i++)
+    for(int i=0; i<nbGen; i++)
     {
-        scoreTotal+= population[i]->score;
+        scoreTotal+= population[i].score;
     }
 
-    for(int i=0; i<(population.size()/2); i++)
+    for(int i=0; i<nbGen; i++)
     {
-        vector<Catapult*> couple;
-        Catapult* A;
-        Catapult* B;
+        Catapult A;
+        Catapult B;
         //paramètres des boucles
-        srand(random);
-        random = rand()%(int)scoreTotal;
-        float j = 0;
-        int n=0;
-        bool finish = false;
+        //uniform_int_distribution<int> ui2(1, scoreTotal-1);
+        random = mt_rand()%(int)scoreTotal;
+        int j = 0;
 
         //selection de A
-        while(j<scoreTotal && !finish)
+        while(random > 0)
         {
-            j+=population[n]->score;
-            if(j>random)
-            {
-                A = population[n];
-                couple.push_back(A);
-                finish=true;
-            }
-            n++;
+            random-=population[j].score;
+            j++;
         }
+        A = population[j];
+        populationTrie[i] = population[j];
+        i++;
+
+
 
         //selection de B et reset dees paramètres de boucles
-        finish = false;
         j = 0;
-        n=0;
-        srand(random);
-        random = rand()%(int)scoreTotal;
+        random = mt_rand()%(int)scoreTotal;
 
-        while(j<scoreTotal && !finish)
+
+        while(random > 0)
         {
-            j+=population[n]->score;
-            if(j>random)
+            random-=population[j].score;
+            if(random <= 0)
             {
-                B = population[n];
+                B = population[j];
 
                 //A==B on recommence la selection de B
-                if(A==B)
+                if(A.id==B.id)
                 {
                     j = 0;
-                    n = -1;
-                    random = rand()%(int)scoreTotal+1;
+                    random = mt_rand()%(int)scoreTotal;
                 }
-                if(A!=B)
+                if(A.id!=B.id)
                 {
-                    couple.push_back(B);
-                    finish=true;
+                    populationTrie[i] = B;
                 }
             }
-
-            n++;
+            j++;
         }
 
-        couples.push_back(couple);
     }
-    cout << "finish" << endl;
-    return couples;
-}
+    cout << "finish RWS" <<endl;
 
-//fonction de mutation
-vector<vector<Catapult*>> mutation(vector<vector<Catapult*>> couples, int tauxMutation)
+    population = populationTrie;
+
+    return population;
+}
+Catapult* crossOver(Catapult* populationTrie)
 {
-    for(int i=0; i<couples.size(); i++)
+    cout << "Begin crossOver" << endl;
+    int sizeArray = 7;
+
+    for(int i=0; i<nbGen; i++)
     {
-        vector<Catapult*> couple = couples[i];
-        //on tire au hasard 0 ou 1 si 1, on inverse le géne, si 0 on garde
-        srand(rand());
-        if(rand()%2)
+        for(int j=0; j< sizeArray; j++)
         {
-            float g0 = couple[0]->aButee;
-            float g1 = couple[1]->aButee;
+            if(ui(mt_rand)%2)
+            {
+                cout << "fdffdffddf" << i << endl;
+                Catapult A = populationTrie[i];
+                Catapult B = populationTrie[i+1];
+                float genA = A.adn[j];
+                float genB = B.adn[j];
+                A.adn[j] = genB;
+                B.adn[j] = genA;
 
-            couple[0]->aButee = g1;
-            couple[1]->aButee = g0;
+                populationTrie[i] = A;
+                populationTrie[i+1] = B;
+            }
         }
+        i++;
 
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->aTraction;
-            float g1 = couple[1]->aTraction;
-
-            couple[0]->aTraction = g1;
-            couple[1]->aTraction = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->mBras;
-            float g1 = couple[1]->mBras;
-
-            couple[0]->mBras = g1;
-            couple[1]->mBras = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->mPoid;
-            float g1 = couple[1]->mPoid;
-
-            couple[0]->mPoid = g1;
-            couple[1]->mPoid = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->mProjectile;
-            float g1 = couple[1]->mProjectile;
-
-            couple[0]->mProjectile = g1;
-            couple[1]->mProjectile = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->lBase;
-            float g1 = couple[1]->lBase;
-
-            couple[0]->lBase = g1;
-            couple[1]->lBase = g0;
-        }
-
-        srand(rand());
-        if(rand()%2)
-        {
-            float g0 = couple[0]->lBras;
-            float g1 = couple[1]->lBras;
-
-            couple[0]->lBras = g1;
-            couple[1]->lBras = g0;
-        }
-
-        couples[i] = couple;
     }
-    return couples;
+
+    cout << "End crossOver" << endl;
+
+    return populationTrie;
 }
+///A DEBUGGER
+/*void mutation(vector<Catapult*>* population, float taux)
+{
+    cout << "Begin Mutation" << endl;
+    for(int i=0; i<population->size(); i++)
+    {
+        cout << "T1" << endl;
+        Catapult* c = population->at(i);
+        for(int j=0; j<7; j++)
+        {
+            int mut = ui(mt_rand)%100;
+            if(mut < taux*100)
+            {
+                if(j==0 || j==1){
+                        cout << "T2" << endl;
+                    c->adn[j] = ui(mt_rand)%360;static variable
+                }else{
+                    cout << "T3" << endl;
+                    c->adn[j] = ui(mt_rand)%1000;
+                }
+            }
+        }
+    }
+    cout << "end Mutation" << endl;
+}*/
 
 int main(int argc, char *argv[])
 {
@@ -179,24 +156,33 @@ int main(int argc, char *argv[])
         cin >>input;
     }
     //nombre de catapult généré par génération
-    const int nbGen = input;
-    vector<Catapult*> population;
+    nbGen = input;
+
+    cout << "Mutation percentage ?" <<endl;
+
+    cin >> input;
+
+    int tauxMut = input/100;
+    cout << tauxMut << endl;
+
+    Catapult population[nbGen];
 
 
     //generation de la première génération de catapultes
     for(int i=0; i<nbGen; i++)
     {
-        float aButee = rand()%360 + 1;
-        float aTraction = rand()%360 + 1;
-        float mBras = rand();
-        float mPoid = rand();
-        float mProjectile = rand();
-        float lBase = rand();
-        float lBras = rand();
+        float aButee = ui(mt_rand);
+        float aTraction = ui(mt_rand);
+        float mBras = ui(mt_rand);
+        float mPoid = ui(mt_rand);
+        float mProjectile = ui(mt_rand);
+        float lBase = ui(mt_rand);
+        float lBras = ui(mt_rand);
 
-        Catapult* c = new Catapult(aButee, aTraction, mBras, mPoid, mProjectile, lBase, lBras);
-        population.push_back(c);
+        Catapult c = Catapult(aButee, aTraction, mBras, mPoid, mProjectile, lBase, lBras);
+        population[i] = c;
     }
+
 
     cout << "number of generation ?" <<endl;
     cin >>input;
@@ -205,31 +191,28 @@ int main(int argc, char *argv[])
     {
         cout << "Generation " << gen+1 << "-----------------------------------------------------" <<endl;
 
+        Catapult* populationTrie = RWS(population);
+
         if(LOG_ADV)
         {
             for(int i=0; i<nbGen; i++){
                 cout << "Catapute : " << i+1 << endl;
-                cout << "Distance : " << population[i]->portee << " metres" << endl;
-                cout << "Viabilité : " << population[i]->viable << endl;
-                cout << "TNT : " << population[i]->eTNT << endl;
-                cout << "Score : " << population[i]->score << endl;
+                cout << "Distance : " << populationTrie[i].portee << " metres" << endl;
+                cout << "Viabilité : " << populationTrie[i].viable << endl;
+                cout << "TNT : " << populationTrie[i].eTNT << endl;
+                cout << "Score : " << populationTrie[i].score << endl;
                 cout << "--------------------------------------" << endl;
             }
         }
 
-        vector<vector<Catapult*>> couples = RWS(population);
-        couples = mutation(couples, 0);
-        //on efface les paretns du tableau population
-        population.clear();
-        //on met les enfants dans le tableau population
-        for(int i=0; i<couples.size(); i++)
-        {
-            vector<Catapult*> couple = couples[i];
+        populationTrie = crossOver(populationTrie);
 
-            for(int j=0; j<couple.size(); j++)
-            {
-                population.push_back(couple[j]);
-            }
+        for(int i=0; i<nbGen; i++)
+        {
+            Catapult c = population[i];
+            c.calcPhysics();
+            c.calcScore();
+            population[i] = c;
         }
     }
 
@@ -237,13 +220,18 @@ int main(int argc, char *argv[])
     if(LOG)
     {
         cout << "Result ---------------------------------------------------------------------------------------------" << endl;
-        for(int i=0; i<population.size(); i++){
-            cout << "Catapute : " << i+1 << endl;
-            cout << "Distance : " << population[i]->portee << " metres" << endl;
-            cout << "Viabilité : " << population[i]->viable << endl;
-            cout << "TNT : " << population[i]->eTNT << endl;
-            cout << "Score : " << population[i]->score << endl;
-            cout << "--------------------------------------" << endl;
-        }
+            for(int i=0; i<nbGen; i++){
+                cout << "Catapute : " << i+1 << endl;
+                cout << "Distance : " << population[i].portee << " metres" << endl;
+                cout << "Viabilité : " << population[i].viable << endl;
+                cout << "TNT : " << population[i].eTNT << endl;
+                cout << "Score : " << population[i].score << endl;
+                cout << "--------------------------------------" << endl;
+            }
     }
+
+    /*for(int i=0; i<nbGen; i++)
+    {
+        delete population[i];
+    }*/
 }
