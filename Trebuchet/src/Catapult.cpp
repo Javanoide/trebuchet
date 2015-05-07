@@ -10,11 +10,13 @@
 
 using namespace std;
 
+int Catapult::genId = 0;
+
+Catapult::Catapult(){
+}
+
 Catapult::Catapult(float aButee, float aTraction, float mBras, float mPoid, float mProjectile, float lBase, float lBras)
 {
-    //Gravité
-    const float g = 9.81;
-
     this->adn[0] = aButee*PI/180; //converti en radian
     this->adn[1] = aTraction*PI/180;
     this->adn[2] = mBras;
@@ -25,6 +27,9 @@ Catapult::Catapult(float aButee, float aTraction, float mBras, float mPoid, floa
 
     this->calcPhysics();
     this->calcScore();
+
+    this->id = genId;
+    genId++;
 }
 
 void Catapult::calcPhysics()
@@ -62,7 +67,7 @@ void Catapult::calcPhysics()
     }
 }
 
-float Catapult::calcScore()
+void Catapult::calcScore()
 {
     this->score = 0;
     int distance = 300;

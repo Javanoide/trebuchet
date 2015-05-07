@@ -5,16 +5,18 @@
 class Catapult
 {
     public:
+        Catapult();
         Catapult(float aButee, float aTraction, float mBras, float mPoid, float mProjectile, float lBase, float lBras);
 
         bool isViable();
-        float calcScore();
+        void calcScore();
         void calcPhysics();
 
         //Genetique
         float adn[7];
 
         //fonction physique calculée
+        int id;
         float fTraction;
         float momentBras;
         float inertie;
@@ -25,7 +27,8 @@ class Catapult
         float portee;
         float score;
         bool viable;
-
+    private :
+        static int genId;
 };
 
 #endif // CATAPULT_H
