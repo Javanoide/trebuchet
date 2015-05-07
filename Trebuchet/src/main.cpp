@@ -84,7 +84,6 @@ Catapult* RWS(Catapult population[])
         }
 
     }
-    cout << "finish RWS" <<endl;
 
     population = populationTrie;
 
@@ -92,7 +91,6 @@ Catapult* RWS(Catapult population[])
 }
 Catapult* crossOver(Catapult* populationTrie)
 {
-    cout << "Begin crossOver" << endl;
     int sizeArray = 7;
 
     for(int i=0; i<nbGen; i++)
@@ -101,7 +99,6 @@ Catapult* crossOver(Catapult* populationTrie)
         {
             if(ui(mt_rand)%2)
             {
-                cout << "fdffdffddf" << i << endl;
                 Catapult A = populationTrie[i];
                 Catapult B = populationTrie[i+1];
                 float genA = A.adn[j];
@@ -117,38 +114,35 @@ Catapult* crossOver(Catapult* populationTrie)
 
     }
 
-    cout << "End crossOver" << endl;
-
     return populationTrie;
 }
-///A DEBUGGER
-/*void mutation(vector<Catapult*>* population, float taux)
+
+Catapult* mutation(Catapult* population, float taux)
 {
-    cout << "Begin Mutation" << endl;
-    for(int i=0; i<population->size(); i++)
+    for(int i=0; i<nbGen; i++)
     {
-        cout << "T1" << endl;
-        Catapult* c = population->at(i);
+        Catapult c = population[i];
         for(int j=0; j<7; j++)
         {
             int mut = ui(mt_rand)%100;
             if(mut < taux*100)
             {
                 if(j==0 || j==1){
-                        cout << "T2" << endl;
-                    c->adn[j] = ui(mt_rand)%360;static variable
+                    c.adn[j] = ui(mt_rand)%360;
                 }else{
-                    cout << "T3" << endl;
-                    c->adn[j] = ui(mt_rand)%1000;
+                    c.adn[j] = ui(mt_rand)%1000;
                 }
             }
         }
+        population[i] = c;
     }
-    cout << "end Mutation" << endl;
-}*/
+    return population;
+}
 
 int main(int argc, char *argv[])
 {
+    bool obj = false;
+    int winner=0;
     int input=1;
     while(input%2 >0)
     {
@@ -163,7 +157,6 @@ int main(int argc, char *argv[])
     cin >> input;
 
     int tauxMut = input/100;
-    cout << tauxMut << endl;
 
     Catapult population[nbGen];
 
@@ -184,34 +177,42 @@ int main(int argc, char *argv[])
     }
 
 
-    cout << "number of generation ?" <<endl;
+    /*cout << "number of generation ?" <<endl;
     cin >>input;
 
-    for(int gen=0; gen<input; gen++)
+    for(int gen=0; gen<input; gen++)*/
+    int gen=0;
+    while(!obj)
     {
-        cout << "Generation " << gen+1 << "-----------------------------------------------------" <<endl;
+        cout << "Generation " << gen++ << "-----------------------------------------------------" <<endl;
 
-        Catapult* populationTrie = RWS(population);
+        Catapult* populationEnfant = RWS(population);
 
         if(LOG_ADV)
         {
             for(int i=0; i<nbGen; i++){
                 cout << "Catapute : " << i+1 << endl;
-                cout << "Distance : " << populationTrie[i].portee << " metres" << endl;
-                cout << "Viabilité : " << populationTrie[i].viable << endl;
-                cout << "TNT : " << populationTrie[i].eTNT << endl;
-                cout << "Score : " << populationTrie[i].score << endl;
+                cout << "Distance : " << populationEnfant[i].portee << " metres" << endl;
+                cout << "Viab infilité : " << populationEnfant[i].viable << endl;
+                cout << "TNT : " << populationEnfant[i].eTNT << endl;
+                cout << "Score : " << populationEnfant[i].score << endl;
                 cout << "--------------------------------------" << endl;
             }
         }
 
-        populationTrie = crossOver(populationTrie);
+        populationEnfant = crossOver(populationEnfant);
+        populationEnfant = mutation(populationEnfant, tauxMut);
 
         for(int i=0; i<nbGen; i++)
         {
-            Catapult c = population[i];
+            Catapult c = populationEnfant[i];
             c.calcPhysics();
             c.calcScore();
+            if(c.portee>=298 && c.portee<=302)
+            {
+                obj=true;
+                winner = i;
+            }
             population[i] = c;
         }
     }
@@ -230,8 +231,10 @@ int main(int argc, char *argv[])
             }
     }
 
-    /*for(int i=0; i<nbGen; i++)
-    {
-        delete population[i];
-    }*/
+    cout << "Winner ---------------------------------------------------------------------------------------------" << endl;
+    cout << "Distance : " << population[winner].portee << " metres" << endl;
+    cout << "Viabilité : " << population[winner].viable << endl;
+    cout << "TNT : " << population[winner].eTNT << endl;
+    cout << "Score : " << population[winner].score << endl;
+    cout << "--------------------------------------" << endl;
 }
