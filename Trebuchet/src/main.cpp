@@ -139,6 +139,30 @@ Catapult* mutation(Catapult* population, float taux)
     return population;
 }
 
+double variance (Catapult* population)
+{
+    double variance;
+    float sum, sumSqr;
+    int n;
+    for(int i=0; i<nbGen; i++)
+    {
+        n++;
+        sum+=population[i].portee;
+        sumSqr+=(population[i].portee*population[i].portee);
+    }
+    variance = (sumSqr-(sum*sum)/n)/(n-1);
+
+    return variance;
+}
+/*  Let n = 0, Sum = 0, SumSq = 0
+    For each datum x:
+        n ← n + 1
+        Sum ← Sum + x
+        SumSq ← SumSq + x × x
+    Var = (SumSq - (Sum × Sum) ⁄ n) ⁄ (n − 1)*/
+
+
+
 int main(int argc, char *argv[])
 {
     bool obj = false;
@@ -165,12 +189,25 @@ int main(int argc, char *argv[])
     for(int i=0; i<nbGen; i++)
     {
         float aButee = ui(mt_rand);
+        aButee = (aButee==0) ? ui(mt_rand) : aButee;
+
         float aTraction = ui(mt_rand);
+        aTraction = (aTraction==0) ? ui(mt_rand) : aTraction;
+
         float mBras = ui(mt_rand);
+        mBras = (mBras==0) ? ui(mt_rand) : mBras;
+
         float mPoid = ui(mt_rand);
+        mPoid = (mPoid==0) ? ui(mt_rand) : mPoid;
+
         float mProjectile = ui(mt_rand);
+        mProjectile = (mProjectile==0) ? ui(mt_rand) : mProjectile;
+
         float lBase = ui(mt_rand);
+        lBase = (lBase==0) ? ui(mt_rand) : lBase;
+
         float lBras = ui(mt_rand);
+        lBras = (lBras==0) ? ui(mt_rand) : lBras;
 
         Catapult c = Catapult(aButee, aTraction, mBras, mPoid, mProjectile, lBase, lBras);
         population[i] = c;
@@ -185,6 +222,7 @@ int main(int argc, char *argv[])
     while(!obj)
     {
         cout << "Generation " << gen++ << "-----------------------------------------------------" <<endl;
+        cout << "Variance : " << variance(population) << endl;
 
         Catapult* populationEnfant = RWS(population);
 

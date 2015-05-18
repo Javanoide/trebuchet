@@ -54,6 +54,9 @@ void Catapult::calcPhysics()
     this->velocite = this->acceleration * lBras;
 
     this->portee = (this->velocite * this->velocite)/G * sin((2 * (90 - ((aButee*180)/PI)))*PI/180);
+    if(this->portee>10000 || this->portee==NAN){
+        this->portee = 10000;
+    }
 
     this->eImpact = 0.5 * mProjectile * (this->velocite * this->velocite);
 
@@ -67,6 +70,7 @@ void Catapult::calcPhysics()
     }
 }
 
+
 void Catapult::calcScore()
 {
     this->score = 0;
@@ -78,7 +82,9 @@ void Catapult::calcScore()
         //this->score+= (this->portee/distance)*50;
         this->score+=this->portee;
     }else
+
     {
+
         //si trop loin on enleve des point par rapport à la distance en trop
         if(this->portee>0)
             this->score = 300-(this->portee-distance);
