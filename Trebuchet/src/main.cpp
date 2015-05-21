@@ -139,10 +139,10 @@ Catapult* mutation(Catapult* population, float taux)
     return population;
 }
 
-double variance (Catapult* population)
+long variance (Catapult* population)
 {
-    double variance;
-    float sum, sumSqr;
+    long variance;
+    long sum, sumSqr;
     int n;
     for(int i=0; i<nbGen; i++)
     {
@@ -154,12 +154,6 @@ double variance (Catapult* population)
 
     return variance;
 }
-/*  Let n = 0, Sum = 0, SumSq = 0
-    For each datum x:
-        n ← n + 1
-        Sum ← Sum + x
-        SumSq ← SumSq + x × x
-    Var = (SumSq - (Sum × Sum) ⁄ n) ⁄ (n − 1)*/
 
 
 
@@ -221,6 +215,8 @@ int main(int argc, char *argv[])
     int gen=0;
     while(!obj)
     {
+        //on mélange le tableau
+        //random_shuffle(&population[0], &population[nbGen]);
         cout << "Generation " << gen++ << "-----------------------------------------------------" <<endl;
         cout << "Variance : " << variance(population) << endl;
 
@@ -241,13 +237,16 @@ int main(int argc, char *argv[])
         populationEnfant = crossOver(populationEnfant);
         populationEnfant = mutation(populationEnfant, tauxMut);
 
+        float bestScore = 0;
+
         for(int i=0; i<nbGen; i++)
         {
             Catapult c = populationEnfant[i];
             c.calcPhysics();
             c.calcScore();
-            if(c.portee>=298 && c.portee<=302)
+            if(c.portee>=298 && c.portee<=302 && c.viable && c.score > bestScore && c.eTNT > 500)
             {
+                bestScore = c.score;
                 obj=true;
                 winner = i;
             }
@@ -270,6 +269,7 @@ int main(int argc, char *argv[])
     }
 
     cout << "Winner ---------------------------------------------------------------------------------------------" << endl;
+    cout << "Génération n°" << gen << endl;
     cout << "Distance : " << population[winner].portee << " metres" << endl;
     cout << "Viabilité : " << population[winner].viable << endl;
     cout << "TNT : " << population[winner].eTNT << endl;

@@ -76,36 +76,17 @@ void Catapult::calcScore()
     this->score = 0;
     int distance = 300;
 
-    //50 point si elletouche la cible, entre 0 et la cible on donne en point le pourcentage de la distance parcourue appliqué à 50. 10% de la distance égale 10% de 50 points
-    if(this->portee <= distance && this->portee > 0)
-    {
-        //this->score+= (this->portee/distance)*50;
-        this->score+=this->portee;
-    }else
+    this->score+= (this->eTNT);
 
-    {
-
-        //si trop loin on enleve des point par rapport à la distance en trop
-        if(this->portee>0)
-            this->score = 300-(this->portee-distance);
-            //this->score-= ((this->portee-distance)/distance)*50;
-    }
-
-    //si la catapulte est fiable on multiplie par 2 le score, sinon on divise
-    if(this->viable)
-    {
+    if(this->viable){
         this->score*=2;
-    }else
-    {
+    }else{
         this->score/=2;
     }
 
-    //TNT
-    //this->score+=(this->eTNT/1000000);
-
-    //pas de scores inférieur à 0
-    if(this->score < 0)
-    {
-        this->score = 0;
+    if(this->portee>=299 && this->portee<=301 && this->viable){
+        this->score*=8;
+    }else{
+        this->score/=8;
     }
 }
